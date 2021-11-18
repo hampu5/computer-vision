@@ -46,33 +46,49 @@ def kernel_sharp_vec(frame):
     kernel = kernel * 1/3
 
     result = np.sum(np.multiply(frame, kernel))
-    return frame[1] + 0.7 * (frame[1] - result)
+    return frame[1] + 0.6 * (frame[1] - result)
 
 def separable_filter(img, kernel):
     rows, cols = img.shape
 
-    out_col = np.zeros((rows - 2, cols), np.uint8)
+    out_col = np.zeros((rows, cols), np.uint8)
     i = 0
     while i < rows - 2:
         j = 0
         while j < cols:
             kernel_col = np.array([img[i, j], img[i + 1, j], img[i + 2, j]])
-            out_col[i, j] = kernel(kernel_col)
+            value = kernel(kernel_col)
+            out_col[i+1, j] = value
+            # Padding
+            if i == 0:
+                out_col[i, j] = value
+            if i == rows - 3:
+                out_col[i+2, j] = value
+            # End of padding
             j = j + 1
         i = i + 1
 
     rows, cols = out_col.shape
     # cv.imshow('Convolution with Column', out_col)
 
-    out_row = np.zeros((rows, cols - 2), np.uint8)
+    out_row = np.zeros((rows, cols), np.uint8)
     i = 0
     while i < rows:
         j = 0
         while j < cols - 2:
             kernel_row = [out_col[i, j], out_col[i, j + 1], out_col[i, j + 2]]
-            out_row[i, j] = kernel(kernel_row)
+            value = kernel(kernel_row)
+            out_row[i, j+1] = value
+            # Padding
+            if j == 0:
+                out_row[i, j] = value
+            if j == cols - 3:
+                out_row[i, j+2] = value
+            # End of padding
             j = j + 1
         i = i + 1
+
+    out_row
 
     return out_row
 
