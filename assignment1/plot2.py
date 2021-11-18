@@ -5,7 +5,7 @@ import math
 width_smartphone = 1
 width_camera = 2
 
-focal_length = 1
+focal_length = 0.5
 
 x1 = -1
 x2 = 1
@@ -13,7 +13,7 @@ y = 1
 z = 2
 
 def get_image_point(x, y, z_var, focal_length):
-    image_point = [x/(z_var * focal_length), y/(z_var * focal_length)]
+    image_point = [focal_length * x / z_var, focal_length * y / z_var]
     return image_point
 
 point1 = get_image_point(x1, y, z, focal_length)
