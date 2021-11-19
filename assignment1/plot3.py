@@ -1,56 +1,42 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import math
 
-width_smartphone = 1
-width_camera = 2
+focal_length = np.arange(1, 4)
 
-focal_length = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-
-x1 = 1
-x2 = 2
+x = 1
 y = 1
-z = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+z = np.arange(1, 11)
 
-def get_distances(point1, point2, z, focal_length):
-    ipoint1 = np.array([focal_length * point1[0]/z, point1[1]/(z*focal_length)])
-    ipoint2 = np.array([point2[0]/(z*focal_length), point2[1]/(z*focal_length)])
-    #distances.append(math.dist(ipoint1, ipoint2))
-    print(ipoint1)
-    distances = np.linalg.norm(ipoint1 - ipoint2)
-    return distances
-
-def get_distance_2d_z(point1, point2, z, focal_length):
+def get_distances_z(point1, point2, z, focal_length):
     distance = []
-    for val in z:
-        ipoint1 = np.array([focal_length * point1[0] / val, focal_length * point1[1]/val])
-        ipoint2 = np.array([focal_length * point2[0] / val, focal_length * point2[1] / val])
+    for z_val in z:
+        ipoint1 = np.array([focal_length * point1[0] / z_val, focal_length * point1[1] / z_val])
+        ipoint2 = np.array([focal_length * point2[0] / z_val, focal_length * point2[1] / z_val])
         distance.append(np.linalg.norm(ipoint1 - ipoint2))
     return distance
 
-def get_distance_2d_fp(point1, point2, z, focal_length):
+def get_distances_fl(point1, point2, z, focal_length):
     distance = []
-    for val in focal_length:
-        ipoint1 = np.array([val * point1[0] / z, val * point1[1] / z])
-        ipoint2 = np.array([val * point2[0] / z, val * point2[1] / z])
+    for fl_val in focal_length:
+        ipoint1 = np.array([fl_val * point1[0] / z, fl_val * point1[1] / z])
+        ipoint2 = np.array([fl_val * point2[0] / z, fl_val * point2[1] / z])
         distance.append(np.linalg.norm(ipoint1 - ipoint2))
     return distance
 
-#point1 = get_image_point(x1, y, z, focal_length)
-#point2 = get_image_point(x2, y, 4, focal_length)
+distances_z = get_distances_z([x, y], [x - 2, y], z, 1)
+distances_fl = get_distances_fl([x, y], [x - 2, y], 1, focal_length)
 
-#plt.plot(point1[0], point1[1], marker='o', label='x1 (-1, 1, 2)')
-#plt.plot(point2[0], point2[1], marker='o', label='x2 (1, 1, 4)')
+plt.rcParams['figure.figsize'] = (8, 4)
 
-# distances = get_distance_2d_z([x1, y], [x2, y], z, 2)
-distances = get_distance_2d_fp([x1, y], [x2, y], 2, focal_length)
+fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+# fig.subplots_adjust(hspace=0.7)
 
-#plt.axes(projection='3d')
-plt.plot(z, distances, marker='o')
-# plt.xlim(-1, 1)
-# plt.ylim(-1, 1)
-plt.xlabel('focal length')
-plt.ylabel('distance between points')
-plt.title('Distance between points as function of focal length, depth = 2')
-plt.legend()
+ax1.plot(z, distances_z)
+ax1.set_xlabel('depth (z_value)')
+ax1.set_ylabel('distance between points')
+
+ax2.plot(focal_length, distances_fl)
+ax2.set_xlabel('focal length')
+
+plt.suptitle('Distance between points as function of depth and focal length')
 plt.show()

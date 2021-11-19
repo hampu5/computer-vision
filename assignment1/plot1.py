@@ -1,16 +1,16 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import math
 
 width_smartphone = 1
 width_camera = 2
 
-focal_length = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+# Numbers from 1 to 10
+focal_length = np.arange(1, 10+1)
 
 def get_fov(width, focal_length):
     return_array = []
     for val in focal_length:
-        return_array.append( (2 * math.atan2(width, 2 * val)) * 180 / math.pi)
+        return_array.append( (2 * np.atan2(width, 2 * val)) * 180 / np.pi)
     return return_array
 
 plt.plot(focal_length, get_fov(width_smartphone, focal_length), label='Smartphone camera')
