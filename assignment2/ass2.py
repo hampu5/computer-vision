@@ -49,6 +49,13 @@ def kernel_sharp_vec(frame):
     result = np.sum(np.multiply(frame, kernel))
     return frame[1] + 0.6 * (frame[1] - result)
 
+def kernel_sharp_vec2(frame):
+    kernel = np.array([-1, 2, -1])
+    kernel = kernel * 1/2
+
+    result = np.sum(np.multiply(frame, kernel))
+    return result
+
 def separable_filter(img, kernel):
     rows, cols = img.shape
 
@@ -95,9 +102,9 @@ def separable_filter(img, kernel):
 
 
 # out_img = filter_blur_slow(img, kernel_blur)
-out_img = separable_filter(img, kernel_blur_vec)
+out_img = separable_filter(img, kernel_sharp_vec)
 
 
-# cv.imshow('Original', img)
-# cv.imshow('Blurred', out_img)
-# cv.waitKey(0)
+cv.imshow('Original', img)
+cv.imshow('Blurred', out_img)
+cv.waitKey(0)
