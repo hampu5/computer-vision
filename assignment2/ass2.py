@@ -4,17 +4,16 @@ import numpy as np
 img = cv.imread('bird.jpg')
 img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
-
 def kernel_blur(frame):
-    kernel = np.array([
-        [1, 1, 1],
-        [1, 1, 1],
-        [1, 1, 1]
-    ])
-    kernel = kernel * 1/9
+    # kernel = np.array([
+    #     [1, 1, 1],
+    #     [1, 1, 1],
+    #     [1, 1, 1]
+    # ])
+    # kernel = kernel * 1/9
 
-    result = np.sum(np.multiply(frame, kernel))
-    return result
+    # result = np.sum(np.multiply(frame, kernel))
+    return frame[0, 0]/9 + frame[0, 1]/9 + frame[0, 2]/9 + frame[1, 0]/9 + frame[1, 1]/9 + frame[1, 2]/9 + frame[2, 0]/9 + frame[2, 1]/9 + frame[2, 2]/9
 
 def filter_blur_slow(img, kernel):
     rows, cols = img.shape
@@ -36,25 +35,19 @@ def filter_blur_slow(img, kernel):
 
 
 def kernel_blur_vec(frame):
-    kernel = np.array([1, 1, 1])
-    kernel = kernel * 1/3
+    # kernel = np.array([1, 1, 1])
+    # kernel = kernel * 1/3
 
-    result = np.sum(np.multiply(frame, kernel))
-    return result
+    # result = np.sum(np.multiply(frame, kernel))
+    return frame[0]/3 + frame[1]/3 + frame[2]/3
 
 def kernel_sharp_vec(frame):
-    kernel = np.array([1, 1, 1])
-    kernel = kernel * 1/3
+    # kernel = np.array([1, 1, 1])
+    # kernel = kernel * 1/3
 
-    result = np.sum(np.multiply(frame, kernel))
+    # result = np.sum(np.multiply(frame, kernel))
+    result = frame[0]/3 + frame[1]/3 + frame[2]/3
     return frame[1] + 0.6 * (frame[1] - result)
-
-def kernel_sharp_vec2(frame):
-    kernel = np.array([-1, 2, -1])
-    kernel = kernel * 1/2
-
-    result = np.sum(np.multiply(frame, kernel))
-    return result
 
 def separable_filter(img, kernel):
     rows, cols = img.shape
@@ -67,17 +60,11 @@ def separable_filter(img, kernel):
             frame_col = np.array([img[i, j], img[i + 1, j], img[i + 2, j]])
             value = kernel(frame_col)
             out_col[i+1, j] = value
-            # Padding
-            # if i == 0:
-            #     out_col[i, j] = value
-            # if i == rows - 3:
-            #     out_col[i+2, j] = value
-            # End of padding
             j = j + 1
         i = i + 1
 
     rows, cols = out_col.shape
-    # cv.imshow('Convolution with Column', out_col)
+    # cv.imshow('Convolution with Column-kernel', out_col)
 
     out_row = np.zeros((rows, cols), np.uint8)
     i = 0
@@ -87,12 +74,6 @@ def separable_filter(img, kernel):
             frame_row = [out_col[i, j], out_col[i, j + 1], out_col[i, j + 2]]
             value = kernel(frame_row)
             out_row[i, j+1] = value
-            # Padding
-            # if j == 0:
-            #     out_row[i, j] = value
-            # if j == cols - 3:
-            #     out_row[i, j+2] = value
-            # End of padding
             j = j + 1
         i = i + 1
 
@@ -101,10 +82,11 @@ def separable_filter(img, kernel):
     return out_row
 
 
-# out_img = filter_blur_slow(img, kernel_blur)
-out_img = separable_filter(img, kernel_sharp_vec)
+# out_img_blur = filter_blur_slow(img, kernel_blur)
+out_img_blur = separable_filter(img, kernel_blur_vec)
+#out_img_sharp = separable_filter(img, kernel_sharp_vec)
 
-
-cv.imshow('Original', img)
-cv.imshow('Blurred', out_img)
-cv.waitKey(0)
+# cv.imshow('Original', img)
+# cv.imshow('Blurred', out_img_blur)
+# cv.imshow('Sharpened', out_img_sharp)
+# cv.waitKey(0)
