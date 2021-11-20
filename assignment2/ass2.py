@@ -84,9 +84,9 @@ def separable_filter(img, kernel):
 
 # out_img_blur = filter_blur_slow(img, kernel_blur)
 out_img_blur = separable_filter(img, kernel_blur_vec)
-#out_img_sharp = separable_filter(img, kernel_sharp_vec)
+out_img_sharp = separable_filter(img, kernel_sharp_vec)
 
-# cv.imshow('Original', img)
-# cv.imshow('Blurred', out_img_blur)
-# cv.imshow('Sharpened', out_img_sharp)
-# cv.waitKey(0)
+cv.imshow('Original', img)
+cv.imshow('Blurred', out_img_blur)
+cv.imshow('Sharpened', out_img_sharp)
+cv.waitKey(0)
