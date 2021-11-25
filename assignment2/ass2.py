@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 
-img = cv.imread('bird.jpg')
+img = cv.imread('grumpy.jpg')
 img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
 def kernel_blur(frame):
@@ -47,7 +47,12 @@ def kernel_sharp_vec(frame):
 
     # result = np.sum(np.multiply(frame, kernel))
     result = frame[0]/3 + frame[1]/3 + frame[2]/3
-    return frame[1] + 0.6 * (frame[1] - result)
+    sharpened_result = frame[1] + 1 * (frame[1] - result)
+    if sharpened_result > 255:
+        sharpened_result = 255
+    if sharpened_result < 0:
+        sharpened_result = 0
+    return sharpened_result
 
 def separable_filter(img, kernel):
     rows, cols = img.shape
