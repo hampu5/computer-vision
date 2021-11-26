@@ -91,7 +91,7 @@ for i in range(rows):
 
 cv.imshow('Detected features', img_markers)
 
-img_harris = cv.cornerHarris(img, 9, 3, 0.05)
+img_harris = cv.cornerHarris(img, 9, 3, 0.05) # Probably between 0 and 1
 
 max_harr = np.amax(img_harris)
 # max_harr = (max_harr + 1) / 2
