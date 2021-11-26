@@ -54,7 +54,21 @@ def kernel_sharp_vec(frame):
         sharpened_result = 0
     return sharpened_result
 
-def separable_filter(img, kernel):
+# Use them Opposite if gradient in y-axis
+def kernel_sobel_col_x(frame):
+    result = frame[0] + frame[1]*2 + frame[2] # 1 2 1
+    if result > 255: result = 255
+    if result < 0: result = 0
+    return result
+
+def kernel_sobel_row_x(frame):
+    result = frame[0] - frame[2] # +1 0 -1
+    if result > 255: result = 255
+    if result < 0: result = 0
+    return result
+
+
+def separable_filter(img, kernel1, kernel2):
     rows, cols = img.shape
 
     out_col = np.zeros((rows, cols), np.uint8)
@@ -63,7 +77,7 @@ def separable_filter(img, kernel):
         j = 0
         while j < cols:
             frame_col = np.array([img[i, j], img[i + 1, j], img[i + 2, j]])
-            value = kernel(frame_col)
+            value = kernel1(frame_col)
             out_col[i+1, j] = value
             j = j + 1
         i = i + 1
@@ -77,7 +91,7 @@ def separable_filter(img, kernel):
         j = 0
         while j < cols - 2:
             frame_row = [out_col[i, j], out_col[i, j + 1], out_col[i, j + 2]]
-            value = kernel(frame_row)
+            value = kernel2(frame_row)
             out_row[i, j+1] = value
             j = j + 1
         i = i + 1
@@ -88,8 +102,8 @@ def separable_filter(img, kernel):
 
 
 # out_img_blur = filter_blur_slow(img, kernel_blur)
-out_img_blur = separable_filter(img, kernel_blur_vec)
-out_img_sharp = separable_filter(img, kernel_sharp_vec)
+out_img_blur = separable_filter(img, kernel_blur_vec, kernel_blur_vec)
+out_img_sharp = separable_filter(img, kernel_sharp_vec, kernel_sharp_vec)
 
 cv.imshow('Original', img)
 cv.imshow('Blurred', out_img_blur)
