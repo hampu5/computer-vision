@@ -1,13 +1,8 @@
 import cv2 as cv
 import numpy as np
-from matplotlib import pyplot as plt
-from numpy.core.fromnumeric import amax
-from sklearn import preprocessing as pp
 
 
 def corner_harris(img, window_size, sobel_aperture_size, k):
-    # window_size = 3
-    # sobel_aperture_size = 3
     out_mat = calc_covariance_matrix(img, window_size, sobel_aperture_size, k)
     assert(out_mat.dtype == np.float32)
     return out_mat
@@ -45,15 +40,13 @@ def calc_covariance_matrix(img, window_size, sobel_aperture_size, k):
             covariance_matrix[x, y, 1] = dx*dy
             covariance_matrix[x, y, 2] = dy*dy
     
-    covariance_matrix = cv.boxFilter(covariance_matrix, cv.CV_32F, (window_size, window_size))
-    # covariance_matrix = cv.GaussianBlur(covariance_matrix, ksize=(3, 3), sigmaX=1, sigmaY=1)
+    # covariance_matrix = cv.boxFilter(covariance_matrix, cv.CV_32F, (window_size, window_size))
+    covariance_matrix = cv.GaussianBlur(covariance_matrix, ksize=(window_size, window_size), sigmaX=2, sigmaY=2)
     
     return calc_harris(covariance_matrix, k)
 
 
 def calc_harris(covariance_matrix, k):
-    # k = 0.05
-
     rows, cols, channels = covariance_matrix.shape
 
     out_matrix = np.zeros((rows, cols), np.float32)
@@ -85,13 +78,12 @@ cv.imshow('Original', img_raw)
 
 # Calculate the places where features are marked (detected)
 img_r = corner_harris(img_raw, 3, 3, 0.06)
-img_r = img_r * 81 # / 0.01234567890123... No idea why
+img_r = img_r * 81 # No idea why...
+
 max_r = np.amax(img_r)
 min_r = np.amin(img_r)
 print(format(max_r, '.20f'))
 print(format(min_r, '.20f'))
-
-# img_uint8 = np.uint8(255 * (img_r - min_r) / (max_r - min_r))
 
 img_markers = np.array(img_raw)
 for i in range(rows):
@@ -103,15 +95,13 @@ cv.imshow('Detected features', img_markers)
 
 
 # Use OpenCV's implementation of Harris corner detection
-img_harris = cv.cornerHarris(img_raw, 3, 3, 0.06) # Probably between 0 and 1
+img_harris = cv.cornerHarris(img_raw, 3, 3, 0.06)
 
 max_harr = np.amax(img_harris)
 min_harr = np.amin(img_harris)
 print(format(max_harr, '.20f'))
 print(format(min_harr, '.20f'))
 
-# max_harr = (max_harr + 1) / 2
-# img_norm_harr = np.uint8(255 * (img_harris + min_harr) / (max_harr + min_harr))
 for i in range(rows):
     for j in range(cols):
         if img_harris[i, j] > 0.0005:
@@ -120,4 +110,3 @@ for i in range(rows):
 cv.imshow("OpenCV's Harris detector", img_raw)
 
 cv.waitKey(0)
-
