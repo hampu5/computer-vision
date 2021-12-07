@@ -61,8 +61,21 @@ A = get_a(old_points, new_points)
 
 U, D, VT = np.linalg.svd(A)
 
-V = np.transpose(VT)
+solution = VT[-1] # last column in VT
 
-solution = V[-1] # last column in V
+# A scalar, w, for the first x-coord in the first point
+w = x0[0]*solution[6] + x0[1]*solution[7] + solution[8]
 
-print(solution)
+# Dividing by it gives a neater transformation matrix
+H = solution / w
+# [9/5 2/3 1]        [21 10 15]
+# [3/5 2/3 1] * 15 = [ 9 10 15]
+# [1/5  0  1]        [ 3  0 15]
+
+# The transformation matrix generates homogeneous coordinates
+# If you divide by the last value (z-coordinate) you get
+# reduced (normalized) homogeneous coordinates,
+# that is, you get the appropriate (x', y').
+
+print([x for x in solution]) # to get more decimals
+print([x for x in H])
