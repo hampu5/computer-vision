@@ -64,9 +64,10 @@ U, D, VT = np.linalg.svd(A)
 solution = VT[-1] # last column in VT
 
 # A scalar, w, for the first x-coord in the first point
-w = x0[0]*solution[6] + x0[1]*solution[7] + solution[8]
+w = solution[8]
 
 # Dividing by it gives a neater transformation matrix
+# that still generate homogeneous coordinates.
 H = solution / w
 # [9/5 2/3 1]        [21 10 15]
 # [3/5 2/3 1] * 15 = [ 9 10 15]
