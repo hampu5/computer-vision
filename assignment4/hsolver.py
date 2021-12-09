@@ -46,4 +46,12 @@ def get_homography(old_points, new_points):
 
     U, D, VT = np.linalg.svd(A)
 
-    return VT[-1]
+    h = VT[-1]
+
+    H = np.array([
+        [h[0], h[1], h[2]],
+        [h[3], h[4], h[5]],
+        [h[6], h[7], h[8]]
+    ])
+
+    return H
