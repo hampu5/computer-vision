@@ -17,45 +17,63 @@ m2 = [3, 1]
 cluster_m1 = []
 cluster_m2 = []
 
-def assign_points(points, centers):
-    for point in points:
-        summed_squares = []
-        for center in centers:
-            summed_square = 0
-            for point_coord, center_coord in zip(point, center):
-                summed_square += (point_coord - center_coord)**2
-            summed_squares.append(summed_square)
-        if summed_squares[0] > summed_squares[1]:
-            cluster_m1.append(point)
-            if point in cluster_m2:
-                cluster_m2.remove(point)
-        else:
-            cluster_m2.append(point)
-            if point in cluster_m1:
-                cluster_m1.remove(point)
 
-def calculate_centroids():
-    m1_new = [0, 0]
-    m2_new = [0, 0]
-    for point in cluster_m1:
-        m1_new[0] += point[0]
-        m1_new[1] += point[1]
+def kmeans(points: list, centroids: list, iterations: int):
+    k = len(centroids)
+    dim = len(centroids[0])
+
+    clusters = []
+    for centroid in centroids:
+        clusters.append([centroid, []])
+
+    def assign_points():
+        for i, centroid in enumerate(clusters):
+            clusters[i][1] = []
+            # print(clusters[i])
+        
+        for point in points:
+            summed_squares = []
+            for centroid, cluster in clusters:
+                # Summed Square Difference of the coordinate components
+                summed_square = 0
+                for point_coord, centroid_coord in zip(point, centroid):
+                    summed_square += (point_coord - centroid_coord)**2
+                summed_squares.append(summed_square)
+            
+            # Find the index for the cluster center closest to the point
+            min_ss = np.inf
+            index = 0
+            for i, ss in enumerate(summed_squares):
+                if ss < min_ss:
+                    min_ss = ss
+                    index = i
+            clusters[index][1].append(point)
+
+        return clusters
+        
+    def calculate_centroids():
+        for cluster in clusters:
+            size = len(cluster[1])
+
+            # Set all cluster centers to 0
+            cluster[0] = []
+            for i in range(dim):
+                cluster[0].append(0)
+
+            # Compute new cluster centers from the
+            # points assigned to each cluster
+            for point in cluster[1]:
+                for i in range(dim):
+                    cluster[0][i] += point[i] / size
     
-    for point in cluster_m2:
-        m2_new[0] += point[0]
-        m2_new[1] += point[1]
+    i = 0
+    while i < iterations:
+        assign_points()
+        calculate_centroids()
+        i += 1
     
-    m1[0] = m1_new[0] / len(cluster_m1)
-    m1[1] = m1_new[1] / len(cluster_m1)
+    return clusters
 
-    m2[0] = m2_new[0] / len(cluster_m2)
-    m2[1] = m2_new[1] / len(cluster_m2)
+# clusters = kmeans([x1, x2, x3, x4, x5, x6, x7, x8, x9, x10], [m1, m2], 2)
 
-assign_points([x1, x2, x3, x4, x5, x6, x7, x8, x9, x10], [m1, m2])
-calculate_centroids()
-
-assign_points([x1, x2, x3, x4, x5, x6, x7, x8, x9, x10], [m1, m2])
-calculate_centroids()
-
-print(cluster_m1)
-print(cluster_m2)
+# print(clusters)
