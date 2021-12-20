@@ -4,24 +4,59 @@ import ratcave as rc
 
 # Shaders
 vert_shader = """
- #version 120
- attribute vec4 vertexPosition;
- uniform mat4 projection_matrix, view_matrix, model_matrix;
+#version 130
+attribute vec4 vertexPosition;
+uniform mat4 projection_matrix, view_matrix, model_matrix;
 
- void main()
- {
-     gl_Position = projection_matrix * view_matrix * model_matrix * vertexPosition;
- }
- """
+out vec4 FragPos;
+// out vec3 Normal;
+// vec3 aPos = gl_Vertex.xyz;
+// vec3 aNormal = gl_Normal;
+
+void main()
+{
+    gl_Position = projection_matrix * view_matrix * model_matrix * vertexPosition;
+    // FragPos = vec3(model_matrix * vec4(gl_Position.xyz, 1.0));
+    FragPos = gl_Position;
+    // Normal = aNormal;
+}
+"""
 
 frag_shader = """
- #version 120
- uniform vec3 diffuse;
- void main()
- {
-     gl_FragColor = vec4(diffuse, 1.);
- }
- """
+#version 130
+uniform vec3 lightColor;
+uniform vec3 objectColor;
+
+in vec4 FragPos;
+// in vec3 Normal;
+
+uniform vec3 lightPos;
+
+void main()
+{
+    // Ambient light
+    float ambientStrength = 1;
+    vec3 ambient = ambientStrength * lightColor;
+    
+    // Diffuse light (Lambertian)
+    
+    vec3  ndc_pos = FragPos.xyz / FragPos.w;
+    vec3  dx      = dFdx( ndc_pos );
+    vec3  dy      = dFdy( ndc_pos );
+
+    vec3 Normal = normalize(cross(dx, dy));
+    Normal *= sign(Normal.z);
+
+    vec3 norm = normalize(Normal);
+    vec3 lightDir = normalize(lightPos - FragPos.xyz);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = diff * lightColor;
+
+    //vec3 result = (ambient + diffuse) * objectColor;
+    vec3 result = (ambient) * objectColor;
+    gl_FragColor = vec4(result, 1.0);
+}
+"""
 
 shader = rc.Shader(vert=vert_shader, frag=frag_shader)
 
@@ -42,8 +77,14 @@ obj_reader = rc.WavefrontReader(obj_filename)
 monkey = obj_reader.get_mesh("Monkey")
 monkey.position.xyz = 0, 0, -2
 
+monkey.uniforms['objectColor'] = [.2, .3, .5]
+monkey.uniforms['lightColor'] = [.8, .8, .1]
+monkey.uniforms['lightPos'] = [0, 0, 3]
+
 # Create Scene
 scene = rc.Scene(meshes=[monkey])
+
+scene.light = rc.Light
 
 def move_camera(dt):
     camera_speed = 3
