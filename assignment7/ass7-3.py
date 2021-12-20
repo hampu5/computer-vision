@@ -2,6 +2,29 @@ import pyglet
 from pyglet.window import key
 import ratcave as rc
 
+# Shaders
+vert_shader = """
+ #version 120
+ attribute vec4 vertexPosition;
+ uniform mat4 projection_matrix, view_matrix, model_matrix;
+
+ void main()
+ {
+     gl_Position = projection_matrix * view_matrix * model_matrix * vertexPosition;
+ }
+ """
+
+frag_shader = """
+ #version 120
+ uniform vec3 diffuse;
+ void main()
+ {
+     gl_FragColor = vec4(diffuse, 1.);
+ }
+ """
+
+shader = rc.Shader(vert=vert_shader, frag=frag_shader)
+
 # Create Window
 window = pyglet.window.Window()
 keys = key.KeyStateHandler()
@@ -32,7 +55,7 @@ pyglet.clock.schedule(move_camera)
 
 @window.event
 def on_draw():
-    with rc.default_shader:
+    with shader:
         scene.draw()
 
 pyglet.app.run()
