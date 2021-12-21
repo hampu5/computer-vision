@@ -4,8 +4,8 @@ import ratcave as rc
 
 # Shaders
 vert_shader = """
-attribute vec4 vertexPosition;
-attribute vec4 normalPosition;
+attribute vec4 v_position;
+attribute vec4 v_normal;
 uniform mat4 projection_matrix, view_matrix, model_matrix, normal_matrix;
 
 varying vec3 FragPos;
@@ -13,9 +13,9 @@ varying vec3 Normal;
 
 void main()
 {
-    gl_Position = projection_matrix * view_matrix * model_matrix * vertexPosition;
-    FragPos = vec3(model_matrix * vertexPosition);
-    Normal = normalize(normal_matrix * normalPosition).xyz;
+    gl_Position = projection_matrix * view_matrix * model_matrix * v_position;
+    FragPos = vec3(model_matrix * v_position);
+    Normal = normalize(normal_matrix * v_normal).xyz;
 }
 """
 
@@ -64,7 +64,7 @@ monkey = obj_reader.get_mesh("Monkey")
 monkey.position.xyz = 0, 0, -2
 
 monkey.uniforms['objectColor'] = [.2, .3, .5]
-monkey.uniforms['lightColor'] = [.8, .8, .1]
+monkey.uniforms['lightColor'] = [1., 1., 1.]
 monkey.uniforms['lightPos'] = [.0, .0, 3.]
 
 # Create Scene
